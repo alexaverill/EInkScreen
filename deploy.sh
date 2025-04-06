@@ -1,0 +1,1 @@
+rsync -aI ./bin/Release/net9.0/linux-arm64/publish/ aaverill@10.0.0.103:~/publish

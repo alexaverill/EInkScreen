@@ -1,3 +1,4 @@
+using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,8 +6,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-//builder.Services.AddTransient<IScreenController, InkyController>();
-builder.Services.AddTransient<IScreenController, GenericController>();
+var useMock = bool.Parse(builder.Configuration["UseMock"] ?? "false");
+if (useMock)
+{
+    Console.WriteLine("Using Mock Screen");
+    builder.Services.AddTransient<IScreenController, GenericController>();
+}
+else
+{
+    Console.WriteLine("Using screen");
+    builder.Services.AddTransient<IScreenController, InkyController>();
+}
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -15,6 +25,15 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 app.Urls.Add("http://0.0.0.0:3030");
+
+Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "images")),
+    RequestPath = "/images"
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

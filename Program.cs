@@ -17,6 +17,15 @@ else
     Console.WriteLine("Using screen");
     builder.Services.AddTransient<IScreenController, InkyController>();
 }
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173");
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,8 +34,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 app.Urls.Add("http://0.0.0.0:3030");
-
-Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
+app.UseCors();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(

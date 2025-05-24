@@ -12,6 +12,6 @@ class GenericController : IScreenController
 
     public void SetImage(string path)
     {
-        throw new NotImplementedException();
+        Console.WriteLine("Setting image!");
     }
 }
